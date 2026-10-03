@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 chcp 65001 >nul
 
-set user_text=Atualizacao
+set user_text=Small updates
 if not "%~1"=="" set user_text=%~1
 
 git add .
