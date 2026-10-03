@@ -1,0 +1,40 @@
+// Módulo
+modulo  `cursos/cadastrar`
+
+importar `tempo`
+
+obj Curso ini
+    titulo          TipoTexto       @obrigatorio
+    totVagas        TipoInteiro     @obrigatorio
+    prazoInscricoes TipoTexto       @obrigatorio
+fim
+
+obj ReacaoAvaliacao ini
+    textoAbertura   TipoTexto       @obrigatorio
+fim
+
+obj ReacaoQuesito ini
+    assunto         TipoTexto       @obrigatorio
+    criterios       TipoTexto       @obrigatorio
+    quesitoObjetivo TipoBoleano     @obrigatorio
+    opcoes          TipoLista
+    tamanhoRespSubj TipoInteiro
+fim
+
+espere CURSO            como Curso
+espere REACAO_AVALIACAO como Curso
+espere REACAO_QUESITO[] como ReacaoQuesito
+
+receber_dados_arquivo()
+
+CURSO.prazoInscricoes = tempo.brToSQL(CURSO.prazoInscricoes)
+var idCurso = gravar_curso(CURSO)
+
+REACAO_AVALIACAO.idCurso = idCurso
+var idReacao = gravar_reacao(REACAO_AVALIACAO)
+
+var item em REACAO_QUESITO {
+    item.idCurso            = idCurso
+    item.idReacaoAvaliacao  = idReacao
+}
+gravar_reacao_uqesitos(REACAO_QUESITO)

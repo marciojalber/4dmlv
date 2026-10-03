@@ -1,0 +1,46 @@
+MODULO      `cursos/cadastrar`
+
+
+
+CURSO:
+titulo          = ``
+totVagas        = 2_000
+prazoInscricoes = `20/10/2026`
+---
+
+
+
+REACAO_AVALIACAO:
+textoAbertura   = `Este curso visa ensinar os peritos médicos`
+---
+
+
+
+usar QUESITO_OBJETIVO como REACAO_QUESITO:
+.opcoes         = [
+  `Ruim`
+  `Regular`
+  `Bom`
+  `Ótimo`
+  `Excelente`
+]
+---
+
+usar QUESITO_SUBJETIVO como REACAO_QUESITO:
+.maxCaracteres  = 150
+.assunto
+---
+
+QUESITO_OBJETIVO[]:
+assunto         = ``
+criterios       = ``
+---
+
+QUESITO_OBJETIVO[]:
+assunto         = ``
+criterios       = ``
+---
+
+QUESITO_SUBJETIVO[]:
+criterios       = ``
+---
