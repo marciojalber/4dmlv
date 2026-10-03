@@ -9,6 +9,7 @@ pub enum TKind {
     t_collon
     t_range
     t_attrib
+    t_var
     t_finish_stmt
 
     // Values
@@ -59,6 +60,7 @@ fn (self TKind) str() string {
         .t_collon 			{ 't_collon' 		}
         .t_range 			{ 't_range' 		}
         .t_attrib       	{ 't_attrib' 	    }
+        .t_var       	    { 't_var' 	        }
         .t_finish_stmt   	{ 't_finish_stmt'   }
     
         // Values
@@ -102,6 +104,7 @@ fn (self TKind) str() string {
 
 fn TKind.get_keyword(val string, cur_kind TKind) TKind {
     return match val {
+        'var'       { .t_var  }
         'ini'       { .t_begin  }
         'fim'       { .t_end    }
         'obj'       { .t_object }

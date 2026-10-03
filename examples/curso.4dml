@@ -19,13 +19,13 @@ obj AvReacaoQuesito ini
     tamanhoRespSubj TipoInteiro
 fim
 
-curso = obj.Curso{
+var curso = obj.Curso{
     titulo: ""
     totVagas: -2000
     preco: -2.000
     prazoInscricoes: data("20/10/2026")
 }
 
-av_reacao = obj.AvReacao{
+var av_reacao = obj.AvReacao{
     textoAbertura: "Este curso visa ensinar os peritos médicos"
 }

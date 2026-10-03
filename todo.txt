@@ -1,0 +1,3 @@
+- To build the parser
+- To accept obj declarations
+- To accept var declarations

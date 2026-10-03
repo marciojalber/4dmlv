@@ -106,10 +106,3 @@ fn (mut self TokenHandler) evaluate_char() {
     self.token.val += symbol
     self.tick()
 }
-
-// -123
-// -1.23
-
-// _123
-// _a11
-// dt!{20/10/2026}
