@@ -7,36 +7,7 @@ fn (mut self TokenHandler) evaluate_char() {
         self.token.col = self.col
     }
 
-    // Get symbols
-    mut is_symbol := false
-    for kgroup in TKind.group_by_size() {
-        add_pos := kgroup.size - 1
-        if self.cursor + add_pos >= self.data.len {
-            continue
-        }
-
-        seq := self.data[self.cursor..self.cursor+kgroup.size]
-        for kpattern in kgroup.group {
-            if kpattern.pattern != seq {
-                continue
-            }
-            
-            is_symbol = true
-            self.add_token(true)
-            self.token = TokenTmp{
-                kind: kpattern.kind
-                lin: self.lin
-                col: self.col
-                val: seq.string()
-            }
-            self.add_token(true)
-            self.cursor += add_pos
-            break
-        }
-    }
-
-    if is_symbol {
-        self.tick()
+    if self.process_symbol() {
         return
     }
 
@@ -45,10 +16,6 @@ fn (mut self TokenHandler) evaluate_char() {
     // Get the kind when is the first char
     if self.token.val.len == 0 && self.token.kind == .t_unknown {
         match symbol {
-            `@` {
-                self.token.kind = .t_attrib
-            }
-
             `-` {
                 self.token.val += symbol
                 if self.cursor + 1 < self.data.len &&
@@ -105,4 +72,40 @@ fn (mut self TokenHandler) evaluate_char() {
 
     self.token.val += symbol
     self.tick()
+}
+
+fn (mut self TokenHandler) process_symbol() bool {
+    mut is_symbol := false
+    for kgroup in TKind.group_by_size() {
+        add_pos := kgroup.size - 1
+        if self.cursor + add_pos >= self.data.len {
+            continue
+        }
+
+        seq := self.data[self.cursor..self.cursor+kgroup.size]
+        for kpattern in kgroup.group {
+            if kpattern.pattern != seq {
+                continue
+            }
+            
+            is_symbol = true
+            self.add_token(true)
+            self.token = TokenTmp{
+                kind: kpattern.kind
+                lin: self.lin
+                col: self.col
+                val: seq.string()
+            }
+            self.add_token(true)
+            self.cursor += add_pos
+            break
+        }
+    }
+
+    if is_symbol {
+        self.tick()
+        return true
+    }
+
+    return false
 }

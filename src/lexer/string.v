@@ -11,7 +11,7 @@ fn (mut self TokenHandler) get_string() {
 	for self.cursor < self.data.len {
 		symbol := self.data[self.cursor]
 		match symbol.str() {
-			'"' {
+			string_char {
 				self.tokens << self.token.token()
 				self.token = TokenTmp{}
 				self.tick()

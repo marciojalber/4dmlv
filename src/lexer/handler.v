@@ -12,9 +12,10 @@ mut:
 	stmt_finished 	bool
 	token 			TokenTmp
 	tokens 			[]Token
+	kw_map 			map[string]TKind
 }
 
-pub fn TokenHandler.new(fname string) &TokenHandler {
+pub fn TokenHandler.new(fname string, kw_map map[string]TKind) &TokenHandler {
 	data := os.read_file(fname) or {
 		eprintln('\n${@FILE}:${@LINE} - file ${fname} not found.')
 		exit(1)
@@ -33,14 +34,15 @@ pub fn TokenHandler.new(fname string) &TokenHandler {
 			lin: lin
 			col: col
 		}
+		kw_map: kw_map
 	}
 }
 
 pub fn (mut self TokenHandler) parse() {
 	for self.cursor < self.data.len {
-		symbol := self.data[self.cursor].str()
-		match symbol {
-			'"' {
+		charac := self.data[self.cursor].str()
+		match charac {
+			string_char {
 				self.add_token(true)
 				self.get_string()
 			}
@@ -85,6 +87,7 @@ fn (mut self TokenHandler) add_token(finish_stmt bool) {
 		self.token.kind = TKind.get_keyword(
 			self.token.val
 			self.token.kind
+			self.kw_map
 		)
 	}
 
@@ -114,16 +117,15 @@ fn (mut self TokenHandler) tick() {
 
 pub fn (self TokenHandler) str() string {
 	mut res := "TokenHandler[${self.tokens.len} tokens]{\n"
+	res += "    LIN:COL   TOKEN           VALUE\n"
+	res += "-----------------------------------\n"
 	for tk in self.tokens {
-		// if tk.kind != .t_unkown { continue }
-		res += '  ${tk.lin}:${tk.col} - ${tk.kind.str()}: ${tk.val}\n'
+		mut val := tk.val.replace('\r', '').replace('\n', '↵')
+		if val.len > 30 {
+			val = val[..27]+"..."
+		}
+		res += '  ${tk.lin:5}:${tk.col:-5} ${tk.kind.str():-15} ${val}\n'
 	}
-	/*
-	for tk in self.tokens {
-		if tk.kind == .t_unkown { continue }
-		res += '  ${tk.lin}:${tk.col} - ${tk.kind.str()}: ${tk.val}\n'
-	}
-	*/
 	res += "}"
 	return res
 }

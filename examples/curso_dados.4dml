@@ -1,7 +1,6 @@
 MODULO      `cursos/cadastrar`
 
 
-
 CURSO:
 titulo          = ``
 totVagas        = 2_000
@@ -16,19 +15,13 @@ textoAbertura   = `Este curso visa ensinar os peritos médicos`
 
 
 
-usar QUESITO_OBJETIVO como REACAO_QUESITO:
-.opcoes         = [
-  `Ruim`
-  `Regular`
-  `Bom`
-  `Ótimo`
-  `Excelente`
-]
+use QUESITO_OBJETIVO como REACAO_QUESITO com:
+opcoes          = [`Ruim`, `Regular`, `Bom`, `Ótimo`, `Excelente`]
 ---
 
-usar QUESITO_SUBJETIVO como REACAO_QUESITO:
-.maxCaracteres  = 150
-.assunto
+use QUESITO_SUBJETIVO como REACAO_QUESITO com:
+maxCaracteres   = 150
+assunto
 ---
 
 QUESITO_OBJETIVO[]:

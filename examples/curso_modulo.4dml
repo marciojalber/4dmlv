@@ -4,19 +4,19 @@ modulo  `cursos/cadastrar`
 importar `tempo`
 
 obj Curso ini
-    titulo          TipoTexto       @obrigatorio
-    totVagas        TipoInteiro     @obrigatorio
-    prazoInscricoes TipoTexto       @obrigatorio
+    titulo          TipoTexto       @[exigido]
+    totVagas        TipoInteiro     @[exigido]
+    prazoInscricoes TipoTexto       @[exigido]
 fim
 
 obj ReacaoAvaliacao ini
-    textoAbertura   TipoTexto       @obrigatorio
+    textoAbertura   TipoTexto       @[exigido]
 fim
 
 obj ReacaoQuesito ini
-    assunto         TipoTexto       @obrigatorio
-    criterios       TipoTexto       @obrigatorio
-    quesitoObjetivo TipoBoleano     @obrigatorio
+    assunto         TipoTexto       @[exigido]
+    criterios       TipoTexto       @[exigido]
+    quesitoObjetivo TipoBoleano     @[exigido]
     opcoes          TipoLista
     tamanhoRespSubj TipoInteiro
 fim
