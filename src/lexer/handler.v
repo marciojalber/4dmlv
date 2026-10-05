@@ -208,6 +208,12 @@ pub fn (self TokenHandler) str() string {
 			clr1 = c_grey
 			clr2 = c_normal
 		}
+		match tk.kind {
+			.t_num, .t_decimal, .t_str, .t_str_raw {
+				clr1 = c_pink
+				clr2 = c_normal
+			}
+		}
 		res += clr1+'  ${tk.lin:5}:${tk.col:-5} ${ign} ${tk.kind.str():-15} ${scope} ${val}\n'+clr2
 	}
 
