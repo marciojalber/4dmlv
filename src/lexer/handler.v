@@ -169,6 +169,7 @@ pub fn (mut self TokenHandler) get_statements() {
 */
 
 const c_pink   = "\033[38;5;218m"
+const c_purple = "\033[35m"
 const c_red    = "\033[38;2;255;50;0m"
 const c_orange = "\033[38;2;255;200;0m"
 const c_blue   = "\033[94m"
@@ -210,9 +211,10 @@ pub fn (self TokenHandler) str() string {
 		}
 		match tk.kind {
 			.t_num, .t_decimal, .t_str, .t_str_raw {
-				clr1 = c_pink
+				clr1 = c_purple
 				clr2 = c_normal
 			}
+			else {}
 		}
 		res += clr1+'  ${tk.lin:5}:${tk.col:-5} ${ign} ${tk.kind.str():-15} ${scope} ${val}\n'+clr2
 	}
