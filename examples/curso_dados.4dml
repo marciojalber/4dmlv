@@ -1,39 +1,41 @@
-MODULO      `cursos/cadastrar`
+MODULO      `cursos/cadastrar`;
 
 
-CURSO:
-titulo          = ``
-totVagas        = 2_000
-prazoInscricoes = `20/10/2026`
----
-
-
-
-REACAO_AVALIACAO:
-textoAbertura   = `Este curso visa ensinar os peritos médicos`
----
+CURSO {
+    titulo          = ``,
+    totVagas        = 2_000,
+    prazoInscricoes = `20/10/2026`,
+}
 
 
 
-use QUESITO_OBJETIVO como REACAO_QUESITO com:
-opcoes          = [`Ruim`, `Regular`, `Bom`, `Ótimo`, `Excelente`]
----
+REACAO_AVALIACAO {
+    textoAbertura   = `Este curso visa ensinar os peritos médicos`,
+}
 
-use QUESITO_SUBJETIVO como REACAO_QUESITO com:
-maxCaracteres   = 150
-assunto
----
 
-QUESITO_OBJETIVO[]:
-assunto         = ``
-criterios       = ``
----
 
-QUESITO_OBJETIVO[]:
-assunto         = ``
-criterios       = ``
----
+use QUESITO_OBJETIVO
+como REACAO_QUESITO com {
+    opcoes          = [`Ruim`, `Regular`, `Bom`, `Ótimo`, `Excelente`],
+}
 
-QUESITO_SUBJETIVO[]:
-criterios       = ``
----
+use QUESITO_SUBJETIVO
+como REACAO_QUESITO com {
+    maxCaracteres   = 150,
+    assunto         = ``,
+}
+
+QUESITO_OBJETIVO[] {
+    assunto         = ``,
+    criterios       = ``,
+}
+
+QUESITO_OBJETIVO[] {
+    assunto         = ``,
+    criterios       = ``,
+}
+
+QUESITO_SUBJETIVO[] {
+    criterios       = ``,
+}

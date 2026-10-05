@@ -10,8 +10,8 @@ pub enum TKind {
     t_comment
     t_collon
     t_range
-    t_attrib
-    t_finish_stmt
+    t_sep_items
+    t_end_stmt
 
     // Values
     t_str
@@ -37,7 +37,6 @@ pub enum TKind {
     t_mod
     t_plus_plus
     t_minus_minus
-    t_minus_3times
     
     // sign
     t_sign
@@ -67,8 +66,8 @@ fn (self TKind) str() string {
         .t_comment 			{ 'T_COMMENT' 		}
         .t_collon 			{ 'T_COLLON' 		}
         .t_range 			{ 'T_RANGE' 		}
-        .t_attrib       	{ 'T_ATTRIB' 	    }
-        .t_finish_stmt   	{ 'T_FINISH_STMT'   }
+        .t_sep_items      	{ 'T_SEP_ITEMS'     }
+        .t_end_stmt      	{ 'T_END_STMT'      }
     
         // Values
         .t_str 				{ 'T_STR' 			}
@@ -94,7 +93,6 @@ fn (self TKind) str() string {
         .t_mod              { 'T_MOD'           }
         .t_plus_plus        { 'T_PLUS_PLUS'     }
         .t_minus_minus      { 'T_MINUS_MINUS'   }
-        .t_minus_3times     { 'T_MINUS_3TIMES'  }
         
         // sign
         .t_sign             { 'T_SIGN'          }
@@ -116,16 +114,6 @@ fn (self TKind) str() string {
     }
 }
 
-fn TKind.get_keyword(val string, cur_kind TKind, kw_map map[string]TKind) TKind {
-    for key, kw in kw_map {
-        if val == key {
-            return kw
-        }
-    }
-
-    return cur_kind
-}
-
 struct KindGroup {
     pub:
         size    int
@@ -140,13 +128,6 @@ struct KindPattern {
 
 fn TKind.group_by_size() []KindGroup {
     return [
-        KindGroup{
-            size: 3
-            group: [
-                KindPattern{'---'.runes(), .t_minus_3times   }
-            ]
-        }
-
         KindGroup{
             size: 2
             group: [
@@ -172,6 +153,8 @@ fn TKind.group_by_size() []KindGroup {
             group: [
                 // Basic
                 KindPattern{':'.runes(), .t_collon           }
+                KindPattern{','.runes(), .t_sep_items        }
+                KindPattern{';'.runes(), .t_end_stmt         }
 
                 // Scopes
                 KindPattern{'{'.runes(), .t_curly_open       }
@@ -192,6 +175,70 @@ fn TKind.group_by_size() []KindGroup {
             ]
         }
     ]
+}
+
+fn (self TKind) get_pattern() string {
+    return match self {
+        // basic
+        .t_range            {'..' }
+        .t_collon           {':' }
+
+        // match
+        .t_plus_plus        {'++' }
+        .t_minus_minus      {'--' }
+
+        // sign
+        .t_sign_plus        {'+=' }
+        .t_sign_minus       {'-=' }
+        .t_sign_mul         {'*=' }
+        .t_sign_div         {'*=' }
+        .t_sign_mod         {'/=' }
+        .t_attrib_open      {'@[' }
+
+        // Scopes
+        .t_curly_open       {'{' }
+        .t_curly_close      {'}' }
+        .t_paren_open       {'(' }
+        .t_paren_close      {')' }
+        .t_bracket_open     {'[' }
+        .t_bracket_close    {']' }
+
+        // match
+        .t_plus             {'+' }
+        .t_mul              {'*' }
+        .t_div              {'*' }
+        .t_mod              {'/' }
+        else                {''}
+    }
+}
+
+fn (self TKind) is_scope_closer() bool {
+    return match self {
+        .t_curly_close,
+        .t_paren_close,
+        .t_bracket_close { true }
+        else { false }
+    }
+}
+
+fn (self TKind) get_scope_closer_by_opener() ?TKind {
+    return match self {
+        .t_curly_open { .t_curly_close }
+        .t_paren_open { .t_paren_close }
+        .t_attrib_open { .t_bracket_close }
+        .t_bracket_open { .t_bracket_close }
+        else { none }
+    }
+}
+
+fn TKind.get_keyword(val string, self TKind, kw_map map[string]TKind) TKind {
+    for key, kw in kw_map {
+        if val == key {
+            return kw
+        }
+    }
+
+    return self
 }
 
 fn (self TKind) is_one_of(kinds ...TKind) bool {
