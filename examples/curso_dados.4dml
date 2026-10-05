@@ -1,41 +1,49 @@
-MODULO      `cursos/cadastrar`;
+// Modelos pré-configurados de quesitos
+QUESITO_OBJETIVO    = {
+    opcoes          = [`Ruim`, `Regular`, `Bom`, `Ótimo`, `Excelente`],
+};
+
+QUESITO_SUBJETIVO   = {
+    maxCaracteres   = 150,
+    assunto         = `Respostas qualitativas`,
+};
 
 
-CURSO {
+
+// Dados para retornar
+ACAO                = `cursos/cadastrar`;
+
+CURSO               = {
     titulo          = ``,
     totVagas        = 2_000,
     prazoInscricoes = `20/10/2026`,
-}
+};
 
-
-
-REACAO_AVALIACAO {
+REACAO_AVALIACAO    = {
     textoAbertura   = `Este curso visa ensinar os peritos médicos`,
 }
 
+REACAO_QUESITOS     = [
+    QUESITO_OBJETIVO    + {
+        assunto         = ``,
+        criterios       = ``,
+    },
+    QUESITO_OBJETIVO    + {
+        assunto         = ``,
+        criterios       = ``,
+    },
+
+    QUESITO_SUBJETIVO   + {
+        criterios       = ``,
+    },
+];
 
 
-use QUESITO_OBJETIVO
-como REACAO_QUESITO com {
-    opcoes          = [`Ruim`, `Regular`, `Bom`, `Ótimo`, `Excelente`],
-}
 
-use QUESITO_SUBJETIVO
-como REACAO_QUESITO com {
-    maxCaracteres   = 150,
-    assunto         = ``,
-}
-
-QUESITO_OBJETIVO[] {
-    assunto         = ``,
-    criterios       = ``,
-}
-
-QUESITO_OBJETIVO[] {
-    assunto         = ``,
-    criterios       = ``,
-}
-
-QUESITO_SUBJETIVO[] {
-    criterios       = ``,
-}
+// Retorno
+retorne {
+    acao        = ACAO,
+    curso       = CURSO,
+    reacao_av   = REACAO_AVALIACAO,
+    quesitos    = REACAO_QUESITOS,
+};

@@ -33,6 +33,24 @@ fn (mut self TokenHandler) process_symbol() bool {
                 continue
             }
             
+            match kptrn.kind {
+                .t_sign_str {
+                    self.add_token(true)
+                    self.cursor += kgroup.size
+                    self.col    += kgroup.size
+                    self.get_string()
+                    return true
+                }
+                .t_sign_cmt_line {
+                    self.add_token(true)
+                    self.cursor += kgroup.size
+                    self.col    += kgroup.size
+                    self.get_comments()
+                    return true
+                }
+                else {}
+            }
+
             is_symbol = true
             self.add_token(true)
             self.token = TokenTmp{

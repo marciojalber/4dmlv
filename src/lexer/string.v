@@ -1,7 +1,6 @@
 module lexer
 
 fn (mut self TokenHandler) get_string() {
-	self.tick()
 	self.token = TokenTmp{
 		kind: .t_str
 		lin: self.lin

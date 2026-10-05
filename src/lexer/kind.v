@@ -13,6 +13,10 @@ pub enum TKind {
     t_sep_items
     t_end_stmt
 
+    // Signs
+    t_sign_str
+    t_sign_cmt_line
+    
     // Values
     t_str
     t_str_raw
@@ -39,12 +43,12 @@ pub enum TKind {
     t_minus_minus
     
     // sign
-    t_sign
-    t_sign_plus
-    t_sign_minus
-    t_sign_mul
-    t_sign_div
-    t_sign_mod
+    t_assign
+    t_assign_plus
+    t_assign_minus
+    t_assign_mul
+    t_assign_div
+    t_assign_mod
 
     // Keywords
     t_begin
@@ -68,6 +72,10 @@ fn (self TKind) str() string {
         .t_range 			{ 'T_RANGE' 		}
         .t_sep_items      	{ 'T_SEP_ITEMS'     }
         .t_end_stmt      	{ 'T_END_STMT'      }
+
+        // Signs
+        .t_sign_str         { 'T_SIGN_STR'      }
+        .t_sign_cmt_line    { 'T_SIGN_CMT_LINE' }
     
         // Values
         .t_str 				{ 'T_STR' 			}
@@ -95,12 +103,12 @@ fn (self TKind) str() string {
         .t_minus_minus      { 'T_MINUS_MINUS'   }
         
         // sign
-        .t_sign             { 'T_SIGN'          }
-        .t_sign_plus        { 'T_SIGN_PLUS'     }
-        .t_sign_minus       { 'T_SIGN_MINUS'    }
-        .t_sign_mul         { 'T_SIGN_MUL'      }
-        .t_sign_div         { 'T_SIGN_DIV'      }
-        .t_sign_mod         { 'T_SIGN_MOD'      }
+        .t_assign             { 'T_ASSIGN'      }
+        .t_assign_plus        { 'T_ASSIGN_PLUS' }
+        .t_assign_minus       { 'T_ASSIGN_MINUS'}
+        .t_assign_mul         { 'T_ASSIGN_MUL'  }
+        .t_assign_div         { 'T_ASSIGN_DIV'  }
+        .t_assign_mod         { 'T_ASSIGN_MOD'  }
 
         // Keywords
         .t_begin            { 'T_BEGIN'         }
@@ -126,24 +134,34 @@ struct KindPattern {
         kind    TKind
 }
 
+fn (self TKind) is_code_usefull() bool {
+    return match self {
+        .t_comment  { false }
+        else        { true }
+    }
+}
+
 fn TKind.group_by_size() []KindGroup {
     return [
         KindGroup{
             size: 2
             group: [
                 // basic
-                KindPattern{'..'.runes(), .t_range           }
+                KindPattern{'..'.runes(), .t_range          }
+
+                // Signs
+                KindPattern{'//'.runes(), .t_sign_cmt_line  }
 
                 // match
-                KindPattern{'++'.runes(), .t_plus_plus       }
-                KindPattern{'--'.runes(), .t_minus_minus     }
+                KindPattern{'++'.runes(), .t_plus_plus      }
+                KindPattern{'--'.runes(), .t_minus_minus    }
 
                 // sign
-                KindPattern{'+='.runes(), .t_sign_plus       }
-                KindPattern{'-='.runes(), .t_sign_minus      }
-                KindPattern{'*='.runes(), .t_sign_mul        }
-                KindPattern{'*='.runes(), .t_sign_div        }
-                KindPattern{'/='.runes(), .t_sign_mod        }
+                KindPattern{'+='.runes(), .t_assign_plus    }
+                KindPattern{'-='.runes(), .t_assign_minus   }
+                KindPattern{'*='.runes(), .t_assign_mul     }
+                KindPattern{'*='.runes(), .t_assign_div     }
+                KindPattern{'/='.runes(), .t_assign_mod     }
                 KindPattern{'@['.runes(), .t_attrib_open    }
             ]
         }
@@ -155,6 +173,9 @@ fn TKind.group_by_size() []KindGroup {
                 KindPattern{':'.runes(), .t_collon           }
                 KindPattern{','.runes(), .t_sep_items        }
                 KindPattern{';'.runes(), .t_end_stmt         }
+
+                // Signs
+                KindPattern{'`'.runes(), .t_sign_str         }
 
                 // Scopes
                 KindPattern{'{'.runes(), .t_curly_open       }
@@ -171,7 +192,7 @@ fn TKind.group_by_size() []KindGroup {
                 KindPattern{'/'.runes(), .t_mod              }
 
                 // sign
-                KindPattern{'='.runes(),  .t_sign            }
+                KindPattern{'='.runes(),  .t_assign          }
             ]
         }
     ]
@@ -180,34 +201,34 @@ fn TKind.group_by_size() []KindGroup {
 fn (self TKind) get_pattern() string {
     return match self {
         // basic
-        .t_range            {'..' }
-        .t_collon           {':' }
+        .t_range            {'..'}
+        .t_collon           {':'}
 
         // match
-        .t_plus_plus        {'++' }
-        .t_minus_minus      {'--' }
+        .t_plus_plus        {'++'}
+        .t_minus_minus      {'--'}
 
         // sign
-        .t_sign_plus        {'+=' }
-        .t_sign_minus       {'-=' }
-        .t_sign_mul         {'*=' }
-        .t_sign_div         {'*=' }
-        .t_sign_mod         {'/=' }
-        .t_attrib_open      {'@[' }
+        .t_assign_plus      {'+='}
+        .t_assign_minus     {'-='}
+        .t_assign_mul       {'*='}
+        .t_assign_div       {'*='}
+        .t_assign_mod       {'/='}
+        .t_attrib_open      {'@['}
 
         // Scopes
-        .t_curly_open       {'{' }
-        .t_curly_close      {'}' }
-        .t_paren_open       {'(' }
-        .t_paren_close      {')' }
-        .t_bracket_open     {'[' }
-        .t_bracket_close    {']' }
+        .t_curly_open       {'{'}
+        .t_curly_close      {'}'}
+        .t_paren_open       {'('}
+        .t_paren_close      {')'}
+        .t_bracket_open     {'['}
+        .t_bracket_close    {']'}
 
         // match
-        .t_plus             {'+' }
-        .t_mul              {'*' }
-        .t_div              {'*' }
-        .t_mod              {'/' }
+        .t_plus             {'+'}
+        .t_mul              {'*'}
+        .t_div              {'*'}
+        .t_mod              {'/'}
         else                {''}
     }
 }

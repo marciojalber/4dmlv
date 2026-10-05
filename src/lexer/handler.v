@@ -46,9 +46,10 @@ pub fn TokenHandler.new(fname string, kw_map map[string]TKind) &TokenHandler {
 		col: col
 		stmt_finished: true
 		token: TokenTmp{
-			kind: TKind.t_unknown
-			lin: lin
-			col: col
+			lin: 	lin
+			col: 	col
+			kind: 	TKind.t_unknown
+			ignore: false
 		}
 		kw_map: kw_map
 	}
@@ -58,15 +59,7 @@ pub fn (mut self TokenHandler) parse() {
 	for self.cursor < self.data.len {
 		charac := self.data[self.cursor].str()
 		match charac {
-			string_char {
-				self.add_token(true)
-				self.get_string()
-			}
-			'#' {
-				self.add_token(true)
-				self.get_comments()
-			}
-			'\r' {
+			' ', '\r' {
 				self.add_token(true)
 				self.tick()
 			}
@@ -76,10 +69,6 @@ pub fn (mut self TokenHandler) parse() {
 				self.lin++
 				self.col = 1
 			}
-			' ' {
-				self.add_token(true)
-				self.tick()
-			}
 			else {
 				self.evaluate_char()
 			}
@@ -87,6 +76,7 @@ pub fn (mut self TokenHandler) parse() {
 	}
 
 	self.add_token(true)
+	// handler.get_statements()
 }
 
 fn (mut self TokenHandler) add_token(finish_stmt bool) {
@@ -114,6 +104,7 @@ fn (mut self TokenHandler) tick() {
 	self.col++
 }
 
+/*
 // @todo To revise
 pub fn (mut self TokenHandler) get_statements() {
 	if self.errors.len != 0 { return }
@@ -137,7 +128,9 @@ pub fn (mut self TokenHandler) get_statements() {
 			.t_sign,
 			.t_sign_plus,
 			.t_sign_minus,
-			.t_sign_minus,
+			.t_sign_mul,
+			.t_sign_div,
+			.t_sign_mod,
 
 			.t_sep_items,
 			.t_paren_open,
@@ -173,26 +166,49 @@ pub fn (mut self TokenHandler) get_statements() {
 		self.statements << statement
 	}
 }
+*/
+
+const c_pink   = "\033[38;5;218m"
+const c_red    = "\033[38;2;255;50;0m"
+const c_orange = "\033[38;2;255;200;0m"
+const c_blue   = "\033[94m"
+const c_green  = "\033[92m"
+const c_grey   = "\033[38;2;75;75;75m"
+const c_normal = "\033[0m"
+
+const s_bold  = "\033[1m"
+const s_under = "\033[4m"
 
 pub fn (self TokenHandler) str() string {
 	mut res := "TokenHandler[${self.tokens.len} tokens]{\n"
 	res += "\nTOKENS (${self.tokens.len}):\n\n"
-	res += "    LIN:COL   TOKEN           SCOPE VALUE\n"
-	res += "-----------------------------------------\n"
+	res += "    LIN:COL   IGN TOKEN           SCOPE VALUE\n"
+	res += "----------------------------------------------------------------------\n"
 	for i, tk in self.tokens {
+		mut clr1 := ''
+		mut clr2 := ''
 		mut val := tk.val.replace('\r', '').replace('\n', '↵')
 		if val.len > 30 {
-			val = val[..27]+"..."
+			val = val[..28]+"..."
 		}
 		mut scope := '     '
 		if i in self.scopes_indexes {
 			if !self.scopes_indexes[i].closer {
-				scope = '  +  '
+				clr1 	= c_green
+				scope 	= '  +  '
 			} else {
-				scope = '  -  '
+				clr1 	= c_orange
+				scope 	= '  -  '
 			}
+			clr2 = c_normal
 		}
-		res += '  ${tk.lin:5}:${tk.col:-5} ${tk.kind.str():-15} ${scope} ${val}\n'
+		mut ign := '   '
+		if tk.ignore {
+			ign  = 'Yes'
+			clr1 = c_grey
+			clr2 = c_normal
+		}
+		res += clr1+'  ${tk.lin:5}:${tk.col:-5} ${ign} ${tk.kind.str():-15} ${scope} ${val}\n'+clr2
 	}
 
 	if self.errors.len != 0 {

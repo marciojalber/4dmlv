@@ -1,11 +1,11 @@
 module lexer
 
 fn (mut self TokenHandler) get_comments() {
-	self.tick()
 	self.token = TokenTmp{
-		kind: TKind.t_comment
-		lin: self.lin
-		col: self.col
+		lin: 	self.lin
+		col: 	self.col
+		ignore: true,
+		kind: 	TKind.t_comment
 	}
 
 	for self.cursor < self.data.len {
@@ -25,7 +25,7 @@ fn (mut self TokenHandler) get_comments() {
 				self.token.val += symbol
 			}
 		}
-		self.tick()
+		self.cursor++
 	}
 
 	self.add_token(false)

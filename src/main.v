@@ -16,6 +16,5 @@ fn main() {
 	}
 	handler := lexer.TokenHandler.new(fname, kw_map)
 	handler.parse()
-	handler.get_statements()
 	println(handler)
 }
